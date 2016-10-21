@@ -8,6 +8,7 @@ int main(int argc, char *const argv[])
     int input_stars_count;
     int remote_stars_count;
     int local_stars_count;
+
     struct star *input_stars;
     struct star *remote_stars;
     struct star *local_stars;
@@ -41,14 +42,12 @@ int main(int argc, char *const argv[])
 
         // a partir d'ici la valeur de la force est "complète"
         Calculer_les_vitesses_et_positions();
+        Remettre_les_forces_a_zero();
 
         // MPI reduce sur les distances minimales
-
-        Remettre_les_forces_a_zero();
         double pas = Se_mettre_daccord_sur_le_pas_de_temps();
         t = t + pas;
     }
-
     MPI_Finalize();
     return EXIT_SUCCESS;
 }

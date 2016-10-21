@@ -9,4 +9,9 @@ struct star {
     double force;
 };
 
+struct remote_stars {
+    struct star *stars;
+    MPI_Request *mpi_req;
+};
+
 #endif // STAR_H

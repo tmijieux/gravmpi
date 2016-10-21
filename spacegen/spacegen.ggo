@@ -1,0 +1,37 @@
+version "0.1"
+package "spacegen"
+
+purpose "generate a star-space-mass mapping"
+
+option "xmin" - "minimum value for x"
+       double optional default="-20000.0"
+
+option "xmax" - "maximum value for x"
+       double optional default="20000.0"
+
+option "ymin" - "minimum value for y"
+       double optional default="-20000.0"
+
+option "ymax" - "maximum value for y"
+       double optional default="20000.0"
+
+option "vxmin" - "minimum value for vx"
+       double optional default="-20000.0"
+
+option "vxmax" - "maximum value for vx"
+       double optional default="20000.0"
+
+option "vymin" - "minimum value for vx"
+       double optional default="-20000.0"
+
+option "vymax" - "maximum value for vy"
+       double optional default="20000.0"
+
+option "mass-min" - "minimum value for the mass"
+       double optional default="1000.0"
+
+option "mass-max" - "maximum value for the mass"
+       double optional default="2000.0"
+
+option "star" s "star count"
+       int optional default="35000"
