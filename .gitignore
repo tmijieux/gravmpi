@@ -1,0 +1,8 @@
+*~
+*l[ao]
+*.o
+*.so
+*.a
+*.deps
+*.libs
+build
