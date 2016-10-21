@@ -16,6 +16,7 @@ int main(int argc, char *const argv[])
     MPI_Comm_size(MPI_WORLD_COMM, &size);
     MPI_Comm_rank(MPI_WORLD_COMM, &rank);
 
+    data_struct();
     int star_buf_size;
     lire_fichier_entree("input.data", rank, &local_stars, &star_buf_size);
     remote_stars = copier_les_stars(local_stars, &star_buf_size);

@@ -23,14 +23,14 @@ void data_struct(void)
   MPI_Aint offsets[count];
   MPI_Datatype newtype;
   for(int i = 0; i<count;++i){
-    blen[i] = 1; 
+    blen[i] = 1;
     oldtypes[0] = MPI_DOU;
   }
-  offsets[0] = G_STRUCT_OFFSET(struct star, mass); 
-  offsets[1] = G_STRUCT_OFFSET(struct star, x); 
-  offsets[2] = G_STRUCT_OFFSET(struct star, y); 
-  offsets[3] = G_STRUCT_OFFSET(struct star, vx); 
-  offsets[4] = G_STRUCT_OFFSET(struct star, vy); 
+  offsets[0] = G_STRUCT_OFFSET(struct star, mass);
+  offsets[1] = G_STRUCT_OFFSET(struct star, x);
+  offsets[2] = G_STRUCT_OFFSET(struct star, y);
+  offsets[3] = G_STRUCT_OFFSET(struct star, vx);
+  offsets[4] = G_STRUCT_OFFSET(struct star, vy);
 
 
   int err;
@@ -39,5 +39,5 @@ void data_struct(void)
   err = MPI_Type_commit(&newtype);
   handle_mpi_error(err);
 }
- 
+
 
