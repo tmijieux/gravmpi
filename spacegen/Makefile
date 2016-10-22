@@ -6,13 +6,13 @@ GENGETOPT=gengetopt
 SRC= \
 	spacegen.c \
 	cmdline.c \
+OBJ=$(SRC:.c=.o)
+DEP=$(SRC:.c=.d)
 
 all: $(TARGET)
 
 -include $(DEP)
 
-OBJ=$(SRC:.c=.o)
-DEP=$(SRC:.c=.d)
 
 cmdline.h cmdline.c: spacegen.ggo
 	$(GENGETOPT) < $^

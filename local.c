@@ -73,7 +73,7 @@ void grav_site_local_compute_force(grav_site *local, grav_site *remote)
         compute_remote_force(local, remote);
 }
 
-void grav_site_local_compute_position(grav_site *local, grav_site *remote, double t)
+void grav_site_local_compute_position(grav_site *local, double t)
 {
     for (int i = 0; i < local->star_count; ++i) {
         double ax, ay;

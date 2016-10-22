@@ -8,14 +8,16 @@ SRC=    cmdline.c \
 	main.c \
 	local.c \
 	mpi.c \
-	input.c
+	input.c \
+	star.c
+
+OBJ=$(SRC:.c=.o)
+DEP=$(SRC:.c=.d)
 
 all: $(TARGET)
 
 -include $(DEP)
 
-OBJ=$(SRC:.c=.o)
-DEP=$(SRC:.c=.d)
 
 star: $(OBJ)
 	$(CC) $^ -o $@ $(LDFLAGS)

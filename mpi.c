@@ -8,6 +8,8 @@
 
 #define BUFSIZE 2048
 
+MPI_Datatype star_type;
+
 int grav_get_rank()
 {
     int rank;
@@ -15,7 +17,8 @@ int grav_get_rank()
     return rank;
 }
 
-static void handle_mpi_error(int code)
+static void
+handle_mpi_error(int code)
 {
     if (code != MPI_SUCCESS) {
         char error_string[BUFSIZE];
@@ -29,20 +32,15 @@ static void handle_mpi_error(int code)
 void grav_mpi_create_mpi_star_struct(void)
 {
     const int count = 5;
-    int blen[count];
-    MPI_Aint offsets[count];
-    MPI_Datatype types[count];
-    MPI_Datatype star_type;
-
-    for (int i = 0; i < count; ++i) {
-        blen[i] = 1;
-        types[i] = MPI_DOUBLE;
-    }
-    offsets[0] = G_STRUCT_OFFSET(grav_star, mass);
-    offsets[1] = G_STRUCT_OFFSET(grav_star, x);
-    offsets[2] = G_STRUCT_OFFSET(grav_star, y);
-    offsets[3] = G_STRUCT_OFFSET(grav_star, vx);
-    offsets[4] = G_STRUCT_OFFSET(grav_star, vy);
+    int blen[6] = { 1, 1, 1, 1, 1, 1 };
+    MPI_Aint offsets[6] = {
+        G_STRUCT_OFFSET(grav_star, mass),
+        G_STRUCT_OFFSET(grav_star, x), G_STRUCT_OFFSET(grav_star, y),
+        G_STRUCT_OFFSET(grav_star, vx),G_STRUCT_OFFSET(grav_star, vy),
+        sizeof(grav_star),
+    };
+    MPI_Datatype types[6] = {
+        MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE, MPI_UB };
 
     int err;
     err = MPI_Type_create_struct(count, blen, offsets, types, &star_type);
@@ -55,8 +53,10 @@ void grav_mpi_create_mpi_star_struct(void)
  * Initialiser les communications persistantes avec le processus suivants
  * et le processus precedant;
  */
-void grav_mpi_init_comm(grav_site remote_buf[2])
+void grav_mpi_init_comm(grav_site remote_buf[2], int group_size)
 {
+    (void) remote_buf;
+    (void) group_size;
     // MPI_Bsend_init
 }
 
@@ -64,8 +64,12 @@ void grav_mpi_init_comm(grav_site remote_buf[2])
  * Démarrer le transfert des données de 'remote' au processus suivant
  * et la reception des données du processus précédant dans le buffer de 'input'
  */
-void grav_mpi_init_star_transfer(grav_site *remote, grav_site *input)
+void grav_mpi_init_star_transfer(
+    grav_site *remote, grav_site *input, int group_size)
 {
+    (void) remote;
+    (void) input;
+    (void) group_size;
     // MPI_Start
 }
 
@@ -73,8 +77,12 @@ void grav_mpi_init_star_transfer(grav_site *remote, grav_site *input)
  * Finaliser les opération démarrer dans la fonction
  *  'grav_mpi_init_star_transfer'
  */
-void grav_mpi_finalize_star_transfer(grav_site *remote, grav_site *input)
+void grav_mpi_finalize_star_transfer(
+    grav_site *remote, grav_site *input, int group_size)
 {
+    (void) remote;
+    (void) input;
+    (void) group_size;
     // MPI_Wait
 }
 
@@ -82,8 +90,11 @@ void grav_mpi_finalize_star_transfer(grav_site *remote, grav_site *input)
  * Calculer avec les autres processus la valeur du pas de temps à adopter
  * avec une réduction MPI
  */
-double grav_mpi_reduce_step(int rank, double local_step)
+double grav_mpi_reduce_step(int rank, int group_size, double local_step)
 {
+    (void) rank;
+    (void) group_size;
+    (void) local_step;
     // MPI_Reduce
 
     return 1.0;
