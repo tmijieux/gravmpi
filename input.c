@@ -32,18 +32,22 @@ void grav_read_file(char const *filename, int rank, int size,
 
     int i = 0;
     while (star_count--) {
-        grav_star *star = local_stars->stars+i;
+        grav_star *s = local_stars->stars+i;
         if (star_count % size == rank) {
             fscanf(f, "%lf %lf %lf %lf %lf",
-                   &star->mass, &star->x, &star->y, &star->vx, &star->vy);
+                   &s->mass, &s->x, &s->y, &s->vx, &s->vy);
             ++i;
         }
     }
 
     memcpy(remote_buf[0].stars, local_stars->stars, len * sizeof(grav_star));
     local_stars->rank = rank;
+    local_stars->star_count = len;
+
     remote_buf[0].rank = rank;
     remote_buf[1].rank = (rank-1 < 0) ? (size-1) : (rank-1);
+    remote_buf[0].star_count = max_len;
+    remote_buf[1].star_count = max_len;
 
     fclose(f);
 }

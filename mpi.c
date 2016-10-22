@@ -86,5 +86,5 @@ double grav_mpi_reduce_step(int rank, double local_step)
 {
     // MPI_Reduce
 
-    return -1.0;
+    return 1.0;
 }
