@@ -1,5 +1,7 @@
+#include <stdio.h>
 #include <math.h>
 #include <assert.h>
+#include <float.h>
 
 #include "star.h"
 #include "local.h"
@@ -24,6 +26,7 @@ compute_local_force(grav_site *local)
 
             s->fx += f_n * v_x;
             s->fy += f_n * v_y;
+            s->min_displacement = min(s->min_displacement, 0.1 * v_n);
         }
         for (int j = i+1; j < local->star_count; ++j) {
             grav_star *r = local->stars+j;
@@ -37,6 +40,7 @@ compute_local_force(grav_site *local)
 
             s->fx += f_n * v_x;
             s->fy += f_n * v_y;
+            s->min_displacement = min(s->min_displacement, 0.1 * v_n);
         }
     }
 }
@@ -48,7 +52,6 @@ compute_remote_force(grav_site *local, grav_site *remote)
 
     for (int i = 0; i < local->star_count; ++i) {
         grav_star *s = local->stars+i;
-
         for (int j = 0; j < i; ++j) {
             grav_star *r = remote->stars+j;
             double f_n, v_x, v_y, v_n;
@@ -61,6 +64,7 @@ compute_remote_force(grav_site *local, grav_site *remote)
 
             s->fx += f_n * v_x;
             s->fy += f_n * v_y;
+            s->min_displacement = min(s->min_displacement, 0.1 * v_n);
         }
     }
 }
@@ -73,25 +77,57 @@ void grav_site_local_compute_force(grav_site *local, grav_site *remote)
         compute_remote_force(local, remote);
 }
 
-void grav_site_local_compute_position(grav_site *local, double t)
+static double
+greatest_root(double a, double b, double c)
 {
-    for (int i = 0; i < local->star_count; ++i) {
-        double ax, ay;
-        grav_star *s = local->stars+i;
-
-        ax = s->fx / s->mass;
-        ay = s->fy / s->mass;
-        s->vx += ax * t;
-        s->vy += ay * t;
-
-        s->x += s->vx * t;
-        s->y += s->vy * t;
-
-        s->fx = s->fy = 0;
+    if (DEQUAL(a, 0)) {
+        if (DEQUAL(b, 0))
+            return 31536.0; // number of seconds in 1/1000e of a year
+        else
+            return -c / b;
     }
+    assert(c < 0);
+    return (-b + sqrt(b*b-4*a*c)) / 2*a;
 }
 
 double grav_site_local_compute_step(grav_site *local)
 {
-    return 1.0;
+    double step = DBL_MAX;
+    for (int i = 0; i < local->star_count; ++i) {
+        double newstep;
+        grav_star *s = local->stars+i;
+
+        s->ax = s->fx / s->mass; // compute acceleration
+        s->ay = s->fy / s->mass;
+        newstep = greatest_root(hypot(s->ax, s->ay),
+                                hypot(s->vx, s->vy),
+                                - s->min_displacement);
+        step = min(step, newstep);
+        (void) s;
+    }
+
+    return step;
+}
+
+void grav_site_local_compute_position(grav_site *local, double step)
+{
+    for (int i = 0; i < local->star_count; ++i) {
+        grav_star *s = local->stars+i;
+
+        s->vx += s->ax * step;
+        s->vy += s->ay * step;
+        s->x += s->vx * step;
+        s->y += s->vy * step;
+    }
+}
+
+void grav_site_local_init(grav_site *local)
+{
+    for (int i = 0; i < local->star_count; ++i) {
+        grav_star *s = local->stars+i;
+
+        s->min_displacement = DBL_MAX;
+        s->fx = 0.0;
+        s->fy = 0.0;
+    }
 }

@@ -11,7 +11,9 @@ struct grav_star {
     double mass;
     double x, y;
     double vx, vy;
+    double ax, ay;
     double fx, fy;
+    double min_displacement;
 };
 
 struct grav_site {

@@ -53,10 +53,11 @@ void grav_mpi_create_mpi_star_struct(void)
  * Initialiser les communications persistantes avec le processus suivants
  * et le processus precedant;
  */
-void grav_mpi_init_comm(grav_site remote_buf[2], int group_size)
+void grav_mpi_init_comm(int rank, int group_size, grav_site remote_buf[2])
 {
-    (void) remote_buf;
+    (void) rank;
     (void) group_size;
+    (void) remote_buf;
     // MPI_Bsend_init
 }
 
@@ -94,8 +95,7 @@ double grav_mpi_reduce_step(int rank, int group_size, double local_step)
 {
     (void) rank;
     (void) group_size;
-    (void) local_step;
     // MPI_Reduce
 
-    return 1.0;
+    return local_step;
 }

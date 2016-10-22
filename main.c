@@ -23,6 +23,7 @@ main_loop(grav_site *local, grav_site *remote, grav_site *input, int group_size)
     double t = 0.0;
     while (t < tmax) {
         int n = group_size;
+        grav_site_local_init(local);
         while (n--) {
             grav_mpi_init_star_transfer(remote, input, group_size);
             grav_site_local_compute_force(local, remote);
@@ -31,12 +32,12 @@ main_loop(grav_site *local, grav_site *remote, grav_site *input, int group_size)
         }
 
         // à partir d'ici la valeur de la force est "complète"
-        grav_site_local_compute_position(local, t);
-
-        // MPI reduce sur les distances minimales
         double step;
         step = grav_site_local_compute_step(local);
+
+        // MPI reduce sur les distances minimales
         step = grav_mpi_reduce_step(local->rank, group_size, step);
+        grav_site_local_compute_position(local, step);
         t += step;
     }
 }
@@ -58,7 +59,7 @@ int main(int argc, char *argv[])
     grav_read_file(opt.input_file_arg, rank,
                    group_size, &local_stars, remote_buf);
 
-    grav_mpi_init_comm(remote_buf, group_size);
+    grav_mpi_init_comm(rank, group_size, remote_buf);
     main_loop(&local_stars, remote_buf, remote_buf+1, group_size);
 
     MPI_Finalize();
