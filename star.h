@@ -1,17 +1,23 @@
-#ifndef STAR_H
-#define STAR_H
+#ifndef GRAV_STAR_H
+#define GRAV_STAR_H
 
-struct star {
+#include <mpi.h>
+
+typedef struct grav_star grav_star;
+typedef struct grav_site grav_site;
+
+struct grav_star {
     double mass;
     double x, y;
     double vx, vy;
-    double ax, ay;
-    double force;
+    double fx, fy;
 };
 
-struct remote_stars {
-    struct star *stars;
+struct grav_site {
+    int star_count;
+    grav_star *stars;
     MPI_Request *mpi_req;
+    int rank;
 };
 
-#endif // STAR_H
+#endif // GRAV_STAR_H
