@@ -1,0 +1,7 @@
+version "0.1"
+package "star"
+
+purpose "compute particle movements due to gravitational interaction"
+
+option "input-file" i "input file"
+       string optional default="./input.data"
