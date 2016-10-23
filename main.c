@@ -10,17 +10,21 @@
 
 #define SWAP_POINTER(P1_, P2_)                  \
     do {                                        \
-        void *_ptr_tmp_MAXCRO_ = (P1_);         \
-        (P1_) = (P2_);                          \
-        (P2_) = _ptr_tmp_MAXCRO_;               \
+        if (group_size > 1) {                   \
+            void *_ptr_tmp_MAXCRO_ = (P1_);     \
+            (P1_) = (P2_);                      \
+            (P2_) = _ptr_tmp_MAXCRO_;           \
+        }                                       \
     }while(0)
 
 
 static void
 main_loop(grav_site *local, grav_site *remote, grav_site *input, int group_size)
 {
-    const double tmax = 1000.0;
+    const double tmax = 3.154e7;
     double t = 0.0;
+    grav_site_print(local);
+
     while (t < tmax) {
         int n = group_size;
         grav_site_local_init(local);
@@ -33,12 +37,19 @@ main_loop(grav_site *local, grav_site *remote, grav_site *input, int group_size)
 
         // à partir d'ici la valeur de la force est "complète"
         double step;
+        grav_site_dump(local, true);
+
         step = grav_site_local_compute_step(local);
 
         // MPI reduce sur les distances minimales
         step = grav_mpi_reduce_step(local->rank, group_size, step);
         grav_site_local_compute_position(local, step);
         t += step;
+
+        // output
+        grav_site_print(local);
+
+        fprintf(stderr, "t=%g, step=%g\n", t, step);
     }
 }
 

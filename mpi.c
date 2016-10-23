@@ -83,8 +83,11 @@ void grav_mpi_finalize_star_transfer(
 {
     (void) remote;
     (void) input;
-    (void) group_size;
-    // MPI_Wait
+     if (group_size == 1)
+         return;
+    else {
+        // MPI_Wait
+    }
 }
 
 /**

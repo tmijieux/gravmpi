@@ -5,7 +5,7 @@
 
 #define SQUARE(X_)  ((X_)*(X_))
 #define min(X_, Y_)  ((X_) < (Y_) ? (X_) : (Y_))
-#define DEQUAL(X_, Y_)  ((fabs((X_) - (Y_)) < 1e-8))
+#define DEQUAL(X_, Y_)  ((fabs((X_) - (Y_)) < 1))
 
 void grav_site_local_compute_force(grav_site *local, grav_site *remote);
 void grav_site_local_compute_position(grav_site *local, double t);

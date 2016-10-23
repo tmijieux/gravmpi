@@ -25,5 +25,6 @@ struct grav_site {
 
 void grav_star_dump(grav_star *s);
 void grav_site_dump(grav_site *site, bool print_data);
+void grav_site_print(grav_site *site);
 
 #endif // GRAV_STAR_H

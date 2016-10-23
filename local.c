@@ -81,11 +81,16 @@ static double
 greatest_root(double a, double b, double c)
 {
     if (DEQUAL(a, 0)) {
-        if (DEQUAL(b, 0))
+        if (DEQUAL(b, 0)){
+            fprintf(stderr, "branch a\n");
             return 31536.0; // number of seconds in 1/1000e of a year
-        else
+        } else {
+            fprintf(stderr, "branch b\n");
             return -c / b;
+        }
     }
+    fprintf(stderr, "branch c\n");
+    fprintf(stderr, "a=%g, b=%g, c=%g\n", a, b, c);
     assert(c < 0);
     return (-b + sqrt(b*b-4*a*c)) / 2*a;
 }
@@ -96,7 +101,6 @@ double grav_site_local_compute_step(grav_site *local)
     for (int i = 0; i < local->star_count; ++i) {
         double newstep;
         grav_star *s = local->stars+i;
-
         s->ax = s->fx / s->mass; // compute acceleration
         s->ay = s->fy / s->mass;
         newstep = greatest_root(hypot(s->ax, s->ay),
@@ -105,7 +109,6 @@ double grav_site_local_compute_step(grav_site *local)
         step = min(step, newstep);
         (void) s;
     }
-
     return step;
 }
 
@@ -113,7 +116,6 @@ void grav_site_local_compute_position(grav_site *local, double step)
 {
     for (int i = 0; i < local->star_count; ++i) {
         grav_star *s = local->stars+i;
-
         s->vx += s->ax * step;
         s->vy += s->ay * step;
         s->x += s->vx * step;
