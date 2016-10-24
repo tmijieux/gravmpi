@@ -80,6 +80,7 @@ void grav_site_local_compute_force(grav_site *local, grav_site *remote)
 static double
 greatest_root(double a, double b, double c)
 {
+    fprintf(stderr, "a=%g, b=%g, c=%g\n", a, b, c);
     if (DEQUAL(a, 0)) {
         if (DEQUAL(b, 0)) {
             fprintf(stderr, "branch a\n");
@@ -90,7 +91,6 @@ greatest_root(double a, double b, double c)
         }
     }
     fprintf(stderr, "branch c\n");
-    fprintf(stderr, "a=%g, b=%g, c=%g\n", a, b, c);
     assert(c < 0);
     return (-b + sqrt(b*b-4*a*c)) / 2*a;
 }
