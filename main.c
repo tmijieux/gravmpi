@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     grav_read_file(opt.input_file_arg, rank,
                    group_size, &local_stars, remote_buf);
 
-    grav_mpi_init_comm(rank, group_size, remote_buf);
+    grav_mpi_init_comm(rank, group_size, remote_buf, remote_buf+1);
     main_loop(&local_stars, remote_buf, remote_buf+1, group_size);
 
     MPI_Finalize();

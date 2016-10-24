@@ -53,25 +53,40 @@ void grav_mpi_create_mpi_star_struct(void)
  * Initialiser les communications persistantes avec le processus suivants
  * et le processus precedant;
  */
-void grav_mpi_init_comm(int rank, int group_size, grav_site remote_buf[2])
+void grav_mpi_init_comm(int rank, int group_size, grav_site *remote, grav_site *input)
 {
-    (void) rank;
-    (void) group_size;
-    (void) remote_buf;
-    // MPI_Bsend_init
+
+  MPI_Bsend_init(remote->stars, remote->star_count,
+		 star_type, (rank+1)%group_size, MPI_ANY_TAG,
+		 MPI_COMM_WORLD, &remote->mpi_req_send);
+
+  MPI_Recv_init(remote->stars, remote->star_count,
+		   star_type, rank-1 < 0 ? group_size-1 : rank-1, MPI_ANY_TAG,
+		   MPI_COMM_WORLD, &remote->mpi_req_recv);
+
+
+  MPI_Bsend_init(input->stars, input->star_count,
+		 star_type, (rank+1)%group_size, MPI_ANY_TAG,
+		 MPI_COMM_WORLD, &input->mpi_req_send);
+  MPI_Recv_init(input->stars, input->star_count,
+		   star_type, rank-1 < 0 ? group_size-1 : rank-1, MPI_ANY_TAG,
+		   MPI_COMM_WORLD, &input->mpi_req_recv);
+
 }
 
 /**
  * Démarrer le transfert des données de 'remote' au processus suivant
  * et la reception des données du processus précédant dans le buffer de 'input'
  */
-void grav_mpi_init_star_transfer(
-    grav_site *remote, grav_site *input, int group_size)
+void grav_mpi_init_star_transfer(grav_site *remote, grav_site *input, int group_size)
 {
-    (void) remote;
-    (void) input;
-    (void) group_size;
-    // MPI_Start
+  // MPI_Start
+  if (group_size == 1)
+    return;
+  else{
+    MPI_Start(&remote->mpi_req_send);
+    MPI_Start(&input->mpi_req_recv);
+  }
 }
 
 /**
@@ -81,13 +96,14 @@ void grav_mpi_init_star_transfer(
 void grav_mpi_finalize_star_transfer(
     grav_site *remote, grav_site *input, int group_size)
 {
-    (void) remote;
-    (void) input;
-     if (group_size == 1)
-         return;
-    else {
-        // MPI_Wait
-    }
+  if (group_size == 1)
+    return;
+  else {
+    MPI_Status status;
+    MPI_Wait(&remote->mpi_req_send, &status);
+    MPI_Wait(&input->mpi_req_recv, &status);
+
+  }
 }
 
 /**
@@ -96,9 +112,8 @@ void grav_mpi_finalize_star_transfer(
  */
 double grav_mpi_reduce_step(int rank, int group_size, double local_step)
 {
-    (void) rank;
-    (void) group_size;
-    // MPI_Reduce
-
-    return local_step;
+  // MPI_Reduce
+  double result;
+  MPI_Allreduce(&local_step,&result,1,MPI_DOUBLE,MPI_MIN, MPI_COMM_WORLD);
+  return result;
 }

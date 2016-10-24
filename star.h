@@ -19,7 +19,8 @@ struct grav_star {
 struct grav_site {
     int star_count;
     grav_star *stars;
-    MPI_Request *mpi_req;
+    MPI_Request mpi_req_send;
+    MPI_Request mpi_req_recv;
     int rank;
 };
 
