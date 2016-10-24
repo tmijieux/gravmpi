@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     MPI_Init(NULL, NULL);
     MPI_Comm_size(MPI_COMM_WORLD, &group_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    printf("rank: %d; group_size: %d\n", rank, group_size);
+    printf("#rank: %d; group_size: %d\n", rank, group_size);
 
     cmdline_parser(argc, argv, &opt);
     grav_mpi_create_mpi_star_struct();
