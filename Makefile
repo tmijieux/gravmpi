@@ -1,11 +1,16 @@
-TARGET=spacegen
-CFLAGS=-std=gnu99 -g -Wall -Wextra
-LDFLAGS=
+TARGET=star
+CFLAGS=-std=gnu99 -g -Wall -Wextra $(shell pkg-config --cflags glib-2.0)
+LDFLAGS=$(shell pkg-config --libs glib-2.0) -lm
 GENGETOPT=gengetopt
+CC=mpicc
 
-SRC= \
-	spacegen.c \
-	cmdline.c \
+SRC=    cmdline.c \
+	main.c \
+	local.c \
+	mpi.c \
+	input.c \
+	star.c
+
 OBJ=$(SRC:.c=.o)
 DEP=$(SRC:.c=.d)
 
@@ -14,10 +19,7 @@ all: $(TARGET)
 -include $(DEP)
 
 
-cmdline.h cmdline.c: spacegen.ggo
-	$(GENGETOPT) < $^
-
-spacegen: $(OBJ)
+star: $(OBJ)
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 %.o: %.c

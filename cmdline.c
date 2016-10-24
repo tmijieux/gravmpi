@@ -25,34 +25,23 @@
 
 #include "cmdline.h"
 
-const char *gengetopt_args_info_purpose = "generate a star-space-mass mapping";
+const char *gengetopt_args_info_purpose = "compute particle movements due to gravitational interaction";
 
-const char *gengetopt_args_info_usage = "Usage: spacegen [OPTIONS]...";
+const char *gengetopt_args_info_usage = "Usage: star [OPTIONS]...";
 
 const char *gengetopt_args_info_versiontext = "";
 
 const char *gengetopt_args_info_description = "";
 
 const char *gengetopt_args_info_help[] = {
-  "  -h, --help             Print help and exit",
-  "  -V, --version          Print version and exit",
-  "      --xmin=DOUBLE      minimum value for x  (default=`-20000.0')",
-  "      --xmax=DOUBLE      maximum value for x  (default=`20000.0')",
-  "      --ymin=DOUBLE      minimum value for y  (default=`-20000.0')",
-  "      --ymax=DOUBLE      maximum value for y  (default=`20000.0')",
-  "      --vxmin=DOUBLE     minimum value for vx  (default=`-20000.0')",
-  "      --vxmax=DOUBLE     maximum value for vx  (default=`20000.0')",
-  "      --vymin=DOUBLE     minimum value for vx  (default=`-20000.0')",
-  "      --vymax=DOUBLE     maximum value for vy  (default=`20000.0')",
-  "      --mass-min=DOUBLE  minimum value for the mass  (default=`1000.0')",
-  "      --mass-max=DOUBLE  maximum value for the mass  (default=`2000.0')",
-  "  -s, --star=INT         star count  (default=`35000')",
+  "  -h, --help               Print help and exit",
+  "  -V, --version            Print version and exit",
+  "  -i, --input-file=STRING  input file  (default=`./input.data')",
     0
 };
 
 typedef enum {ARG_NO
-  , ARG_INT
-  , ARG_DOUBLE
+  , ARG_STRING
 } cmdline_parser_arg_type;
 
 static
@@ -73,45 +62,15 @@ void clear_given (struct gengetopt_args_info *args_info)
 {
   args_info->help_given = 0 ;
   args_info->version_given = 0 ;
-  args_info->xmin_given = 0 ;
-  args_info->xmax_given = 0 ;
-  args_info->ymin_given = 0 ;
-  args_info->ymax_given = 0 ;
-  args_info->vxmin_given = 0 ;
-  args_info->vxmax_given = 0 ;
-  args_info->vymin_given = 0 ;
-  args_info->vymax_given = 0 ;
-  args_info->mass_min_given = 0 ;
-  args_info->mass_max_given = 0 ;
-  args_info->star_given = 0 ;
+  args_info->input_file_given = 0 ;
 }
 
 static
 void clear_args (struct gengetopt_args_info *args_info)
 {
   FIX_UNUSED (args_info);
-  args_info->xmin_arg = -20000.0;
-  args_info->xmin_orig = NULL;
-  args_info->xmax_arg = 20000.0;
-  args_info->xmax_orig = NULL;
-  args_info->ymin_arg = -20000.0;
-  args_info->ymin_orig = NULL;
-  args_info->ymax_arg = 20000.0;
-  args_info->ymax_orig = NULL;
-  args_info->vxmin_arg = -20000.0;
-  args_info->vxmin_orig = NULL;
-  args_info->vxmax_arg = 20000.0;
-  args_info->vxmax_orig = NULL;
-  args_info->vymin_arg = -20000.0;
-  args_info->vymin_orig = NULL;
-  args_info->vymax_arg = 20000.0;
-  args_info->vymax_orig = NULL;
-  args_info->mass_min_arg = 1000.0;
-  args_info->mass_min_orig = NULL;
-  args_info->mass_max_arg = 2000.0;
-  args_info->mass_max_orig = NULL;
-  args_info->star_arg = 35000;
-  args_info->star_orig = NULL;
+  args_info->input_file_arg = gengetopt_strdup ("./input.data");
+  args_info->input_file_orig = NULL;
 
 }
 
@@ -122,17 +81,7 @@ void init_args_info(struct gengetopt_args_info *args_info)
 
   args_info->help_help = gengetopt_args_info_help[0] ;
   args_info->version_help = gengetopt_args_info_help[1] ;
-  args_info->xmin_help = gengetopt_args_info_help[2] ;
-  args_info->xmax_help = gengetopt_args_info_help[3] ;
-  args_info->ymin_help = gengetopt_args_info_help[4] ;
-  args_info->ymax_help = gengetopt_args_info_help[5] ;
-  args_info->vxmin_help = gengetopt_args_info_help[6] ;
-  args_info->vxmax_help = gengetopt_args_info_help[7] ;
-  args_info->vymin_help = gengetopt_args_info_help[8] ;
-  args_info->vymax_help = gengetopt_args_info_help[9] ;
-  args_info->mass_min_help = gengetopt_args_info_help[10] ;
-  args_info->mass_max_help = gengetopt_args_info_help[11] ;
-  args_info->star_help = gengetopt_args_info_help[12] ;
+  args_info->input_file_help = gengetopt_args_info_help[2] ;
 
 }
 
@@ -216,17 +165,8 @@ static void
 cmdline_parser_release (struct gengetopt_args_info *args_info)
 {
 
-  free_string_field (&(args_info->xmin_orig));
-  free_string_field (&(args_info->xmax_orig));
-  free_string_field (&(args_info->ymin_orig));
-  free_string_field (&(args_info->ymax_orig));
-  free_string_field (&(args_info->vxmin_orig));
-  free_string_field (&(args_info->vxmax_orig));
-  free_string_field (&(args_info->vymin_orig));
-  free_string_field (&(args_info->vymax_orig));
-  free_string_field (&(args_info->mass_min_orig));
-  free_string_field (&(args_info->mass_max_orig));
-  free_string_field (&(args_info->star_orig));
+  free_string_field (&(args_info->input_file_arg));
+  free_string_field (&(args_info->input_file_orig));
 
 
 
@@ -261,28 +201,8 @@ cmdline_parser_dump(FILE *outfile, struct gengetopt_args_info *args_info)
     write_into_file(outfile, "help", 0, 0 );
   if (args_info->version_given)
     write_into_file(outfile, "version", 0, 0 );
-  if (args_info->xmin_given)
-    write_into_file(outfile, "xmin", args_info->xmin_orig, 0);
-  if (args_info->xmax_given)
-    write_into_file(outfile, "xmax", args_info->xmax_orig, 0);
-  if (args_info->ymin_given)
-    write_into_file(outfile, "ymin", args_info->ymin_orig, 0);
-  if (args_info->ymax_given)
-    write_into_file(outfile, "ymax", args_info->ymax_orig, 0);
-  if (args_info->vxmin_given)
-    write_into_file(outfile, "vxmin", args_info->vxmin_orig, 0);
-  if (args_info->vxmax_given)
-    write_into_file(outfile, "vxmax", args_info->vxmax_orig, 0);
-  if (args_info->vymin_given)
-    write_into_file(outfile, "vymin", args_info->vymin_orig, 0);
-  if (args_info->vymax_given)
-    write_into_file(outfile, "vymax", args_info->vymax_orig, 0);
-  if (args_info->mass_min_given)
-    write_into_file(outfile, "mass-min", args_info->mass_min_orig, 0);
-  if (args_info->mass_max_given)
-    write_into_file(outfile, "mass-max", args_info->mass_max_orig, 0);
-  if (args_info->star_given)
-    write_into_file(outfile, "star", args_info->star_orig, 0);
+  if (args_info->input_file_given)
+    write_into_file(outfile, "input-file", args_info->input_file_orig, 0);
 
 
   i = EXIT_SUCCESS;
@@ -418,6 +338,7 @@ int update_arg(void *field, char **orig_field,
   char *stop_char = 0;
   const char *val = value;
   int found;
+  char **string_field;
   FIX_UNUSED (field);
 
   stop_char = 0;
@@ -448,28 +369,18 @@ int update_arg(void *field, char **orig_field,
     val = possible_values[found];
 
   switch(arg_type) {
-  case ARG_INT:
-    if (val) *((int *)field) = strtol (val, &stop_char, 0);
-    break;
-  case ARG_DOUBLE:
-    if (val) *((double *)field) = strtod (val, &stop_char);
+  case ARG_STRING:
+    if (val) {
+      string_field = (char **)field;
+      if (!no_free && *string_field)
+        free (*string_field); /* free previous string */
+      *string_field = gengetopt_strdup (val);
+    }
     break;
   default:
     break;
   };
 
-  /* check numeric conversion */
-  switch(arg_type) {
-  case ARG_INT:
-  case ARG_DOUBLE:
-    if (val && !(stop_char && *stop_char == '\0')) {
-      fprintf(stderr, "%s: invalid numeric value: %s\n", package_name, val);
-      return 1; /* failure */
-    }
-    break;
-  default:
-    ;
-  };
 
   /* store the original value */
   switch(arg_type) {
@@ -530,21 +441,11 @@ cmdline_parser_internal (
       static struct option long_options[] = {
         { "help",	0, NULL, 'h' },
         { "version",	0, NULL, 'V' },
-        { "xmin",	1, NULL, 0 },
-        { "xmax",	1, NULL, 0 },
-        { "ymin",	1, NULL, 0 },
-        { "ymax",	1, NULL, 0 },
-        { "vxmin",	1, NULL, 0 },
-        { "vxmax",	1, NULL, 0 },
-        { "vymin",	1, NULL, 0 },
-        { "vymax",	1, NULL, 0 },
-        { "mass-min",	1, NULL, 0 },
-        { "mass-max",	1, NULL, 0 },
-        { "star",	1, NULL, 's' },
+        { "input-file",	1, NULL, 'i' },
         { 0,  0, 0, 0 }
       };
 
-      c = getopt_long (argc, argv, "hVs:", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVi:", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
@@ -560,162 +461,20 @@ cmdline_parser_internal (
           cmdline_parser_free (&local_args_info);
           exit (EXIT_SUCCESS);
 
-        case 's':	/* star count.  */
+        case 'i':	/* input file.  */
 
 
-          if (update_arg( (void *)&(args_info->star_arg),
-               &(args_info->star_orig), &(args_info->star_given),
-              &(local_args_info.star_given), optarg, 0, "35000", ARG_INT,
+          if (update_arg( (void *)&(args_info->input_file_arg),
+               &(args_info->input_file_orig), &(args_info->input_file_given),
+              &(local_args_info.input_file_given), optarg, 0, "./input.data", ARG_STRING,
               check_ambiguity, override, 0, 0,
-              "star", 's',
+              "input-file", 'i',
               additional_error))
             goto failure;
 
           break;
 
         case 0:	/* Long option with no short option */
-          /* minimum value for x.  */
-          if (strcmp (long_options[option_index].name, "xmin") == 0)
-          {
-
-
-            if (update_arg( (void *)&(args_info->xmin_arg),
-                 &(args_info->xmin_orig), &(args_info->xmin_given),
-                &(local_args_info.xmin_given), optarg, 0, "-20000.0", ARG_DOUBLE,
-                check_ambiguity, override, 0, 0,
-                "xmin", '-',
-                additional_error))
-              goto failure;
-
-          }
-          /* maximum value for x.  */
-          else if (strcmp (long_options[option_index].name, "xmax") == 0)
-          {
-
-
-            if (update_arg( (void *)&(args_info->xmax_arg),
-                 &(args_info->xmax_orig), &(args_info->xmax_given),
-                &(local_args_info.xmax_given), optarg, 0, "20000.0", ARG_DOUBLE,
-                check_ambiguity, override, 0, 0,
-                "xmax", '-',
-                additional_error))
-              goto failure;
-
-          }
-          /* minimum value for y.  */
-          else if (strcmp (long_options[option_index].name, "ymin") == 0)
-          {
-
-
-            if (update_arg( (void *)&(args_info->ymin_arg),
-                 &(args_info->ymin_orig), &(args_info->ymin_given),
-                &(local_args_info.ymin_given), optarg, 0, "-20000.0", ARG_DOUBLE,
-                check_ambiguity, override, 0, 0,
-                "ymin", '-',
-                additional_error))
-              goto failure;
-
-          }
-          /* maximum value for y.  */
-          else if (strcmp (long_options[option_index].name, "ymax") == 0)
-          {
-
-
-            if (update_arg( (void *)&(args_info->ymax_arg),
-                 &(args_info->ymax_orig), &(args_info->ymax_given),
-                &(local_args_info.ymax_given), optarg, 0, "20000.0", ARG_DOUBLE,
-                check_ambiguity, override, 0, 0,
-                "ymax", '-',
-                additional_error))
-              goto failure;
-
-          }
-          /* minimum value for vx.  */
-          else if (strcmp (long_options[option_index].name, "vxmin") == 0)
-          {
-
-
-            if (update_arg( (void *)&(args_info->vxmin_arg),
-                 &(args_info->vxmin_orig), &(args_info->vxmin_given),
-                &(local_args_info.vxmin_given), optarg, 0, "-20000.0", ARG_DOUBLE,
-                check_ambiguity, override, 0, 0,
-                "vxmin", '-',
-                additional_error))
-              goto failure;
-
-          }
-          /* maximum value for vx.  */
-          else if (strcmp (long_options[option_index].name, "vxmax") == 0)
-          {
-
-
-            if (update_arg( (void *)&(args_info->vxmax_arg),
-                 &(args_info->vxmax_orig), &(args_info->vxmax_given),
-                &(local_args_info.vxmax_given), optarg, 0, "20000.0", ARG_DOUBLE,
-                check_ambiguity, override, 0, 0,
-                "vxmax", '-',
-                additional_error))
-              goto failure;
-
-          }
-          /* minimum value for vx.  */
-          else if (strcmp (long_options[option_index].name, "vymin") == 0)
-          {
-
-
-            if (update_arg( (void *)&(args_info->vymin_arg),
-                 &(args_info->vymin_orig), &(args_info->vymin_given),
-                &(local_args_info.vymin_given), optarg, 0, "-20000.0", ARG_DOUBLE,
-                check_ambiguity, override, 0, 0,
-                "vymin", '-',
-                additional_error))
-              goto failure;
-
-          }
-          /* maximum value for vy.  */
-          else if (strcmp (long_options[option_index].name, "vymax") == 0)
-          {
-
-
-            if (update_arg( (void *)&(args_info->vymax_arg),
-                 &(args_info->vymax_orig), &(args_info->vymax_given),
-                &(local_args_info.vymax_given), optarg, 0, "20000.0", ARG_DOUBLE,
-                check_ambiguity, override, 0, 0,
-                "vymax", '-',
-                additional_error))
-              goto failure;
-
-          }
-          /* minimum value for the mass.  */
-          else if (strcmp (long_options[option_index].name, "mass-min") == 0)
-          {
-
-
-            if (update_arg( (void *)&(args_info->mass_min_arg),
-                 &(args_info->mass_min_orig), &(args_info->mass_min_given),
-                &(local_args_info.mass_min_given), optarg, 0, "1000.0", ARG_DOUBLE,
-                check_ambiguity, override, 0, 0,
-                "mass-min", '-',
-                additional_error))
-              goto failure;
-
-          }
-          /* maximum value for the mass.  */
-          else if (strcmp (long_options[option_index].name, "mass-max") == 0)
-          {
-
-
-            if (update_arg( (void *)&(args_info->mass_max_arg),
-                 &(args_info->mass_max_orig), &(args_info->mass_max_given),
-                &(local_args_info.mass_max_given), optarg, 0, "2000.0", ARG_DOUBLE,
-                check_ambiguity, override, 0, 0,
-                "mass-max", '-',
-                additional_error))
-              goto failure;
-
-          }
-
-          break;
         case '?':	/* Invalid option.  */
           /* `getopt_long' already printed an error message.  */
           goto failure;

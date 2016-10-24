@@ -2,52 +2,77 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-int main(int argc, char *const argv[])
+#include "cmdline.h"
+#include "star.h"
+#include "input.h"
+#include "grav-mpi.h"
+#include "local.h"
+
+#define SWAP_POINTER(P1_, P2_)                  \
+    do {                                        \
+        if (group_size > 1) {                   \
+            void *_ptr_tmp_MAXCRO_ = (P1_);     \
+            (P1_) = (P2_);                      \
+            (P2_) = _ptr_tmp_MAXCRO_;           \
+        }                                       \
+    }while(0)
+
+
+static void
+main_loop(grav_site *local, grav_site *remote, grav_site *input, int group_size)
 {
-    int size, rank;
-    int input_stars_count;
-    int remote_stars_count;
-    int local_stars_count;
-
-    struct star *input_stars;
-    struct star *remote_stars;
-    struct star *local_stars;
-
-    MPI_Init(NULL, NULL);
-    MPI_Comm_size(MPI_WORLD_COMM, &size);
-    MPI_Comm_rank(MPI_WORLD_COMM, &rank);
-
-    data_struct();
-    int star_buf_size;
-    lire_fichier_entree("input.data", rank, &local_stars, &star_buf_size);
-    remote_stars = copier_les_stars(local_stars, &star_buf_size);
-    Initialisation_des_forces();
-
-    Mettre_en_place_les_4_canaux_de_communications();
-    // 2 (proc precedant et proc suivant) pour input_stars
-    // et 2 (proc precedant et proc suivant) pour remote_stars
+    const double tmax = 3.154e7;
+    double t = 0.0;
+    grav_site_print(local);
 
     while (t < tmax) {
-        int n = size;
+        int n = group_size;
+        grav_site_local_init(local);
         while (n--) {
-            Initialiser_reception_input_stars(); // MPI_Start
-            Initialiser_envoi_remote_stars();    // MPI_Start
-            Calcul_des_forces_appliques_sur_les_local_stars_par_les_remote_stars();
-
-            Finaliser_reception_input_stars(); // MPI_Wait
-            Finaliser_envoi_remote_stars();    // MPI_Wait
-
-            SWAP_POINTEUR(local_stars, remote_stars);
+            grav_mpi_init_star_transfer(remote, input, group_size);
+            grav_site_local_compute_force(local, remote);
+            grav_mpi_finalize_star_transfer(remote, input, group_size);
+            SWAP_POINTER(remote, input);
         }
 
-        // a partir d'ici la valeur de la force est "complète"
-        Calculer_les_vitesses_et_positions();
-        Remettre_les_forces_a_zero();
+        // à partir d'ici la valeur de la force est "complète"
+        double step;
+        grav_site_dump(local, true);
+
+        step = grav_site_local_compute_step(local);
 
         // MPI reduce sur les distances minimales
-        double pas = Se_mettre_daccord_sur_le_pas_de_temps();
-        t = t + pas;
+        step = grav_mpi_reduce_step(local->rank, group_size, step);
+        grav_site_local_compute_position(local, step);
+        t += step;
+
+        // output
+        grav_site_print(local);
+
+        fprintf(stderr, "t=%g, step=%g\n", t, step);
     }
+}
+
+int main(int argc, char *argv[])
+{
+    int group_size, rank;
+    grav_site remote_buf[2];
+    grav_site local_stars;
+    struct gengetopt_args_info opt;
+
+    MPI_Init(NULL, NULL);
+    MPI_Comm_size(MPI_COMM_WORLD, &group_size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    printf("rank: %d; group_size: %d\n", rank, group_size);
+
+    cmdline_parser(argc, argv, &opt);
+    grav_mpi_create_mpi_star_struct();
+    grav_read_file(opt.input_file_arg, rank,
+                   group_size, &local_stars, remote_buf);
+
+    grav_mpi_init_comm(rank, group_size, remote_buf);
+    main_loop(&local_stars, remote_buf, remote_buf+1, group_size);
+
     MPI_Finalize();
     return EXIT_SUCCESS;
 }

@@ -21,12 +21,12 @@ extern "C" {
 
 #ifndef CMDLINE_PARSER_PACKAGE
 /** @brief the program name (used for printing errors) */
-#define CMDLINE_PARSER_PACKAGE "spacegen"
+#define CMDLINE_PARSER_PACKAGE "star"
 #endif
 
 #ifndef CMDLINE_PARSER_PACKAGE_NAME
 /** @brief the complete program name (used for help and version) */
-#define CMDLINE_PARSER_PACKAGE_NAME "spacegen"
+#define CMDLINE_PARSER_PACKAGE_NAME "star"
 #endif
 
 #ifndef CMDLINE_PARSER_VERSION
@@ -39,53 +39,13 @@ struct gengetopt_args_info
 {
   const char *help_help; /**< @brief Print help and exit help description.  */
   const char *version_help; /**< @brief Print version and exit help description.  */
-  double xmin_arg;	/**< @brief minimum value for x (default='-20000.0').  */
-  char * xmin_orig;	/**< @brief minimum value for x original value given at command line.  */
-  const char *xmin_help; /**< @brief minimum value for x help description.  */
-  double xmax_arg;	/**< @brief maximum value for x (default='20000.0').  */
-  char * xmax_orig;	/**< @brief maximum value for x original value given at command line.  */
-  const char *xmax_help; /**< @brief maximum value for x help description.  */
-  double ymin_arg;	/**< @brief minimum value for y (default='-20000.0').  */
-  char * ymin_orig;	/**< @brief minimum value for y original value given at command line.  */
-  const char *ymin_help; /**< @brief minimum value for y help description.  */
-  double ymax_arg;	/**< @brief maximum value for y (default='20000.0').  */
-  char * ymax_orig;	/**< @brief maximum value for y original value given at command line.  */
-  const char *ymax_help; /**< @brief maximum value for y help description.  */
-  double vxmin_arg;	/**< @brief minimum value for vx (default='-20000.0').  */
-  char * vxmin_orig;	/**< @brief minimum value for vx original value given at command line.  */
-  const char *vxmin_help; /**< @brief minimum value for vx help description.  */
-  double vxmax_arg;	/**< @brief maximum value for vx (default='20000.0').  */
-  char * vxmax_orig;	/**< @brief maximum value for vx original value given at command line.  */
-  const char *vxmax_help; /**< @brief maximum value for vx help description.  */
-  double vymin_arg;	/**< @brief minimum value for vx (default='-20000.0').  */
-  char * vymin_orig;	/**< @brief minimum value for vx original value given at command line.  */
-  const char *vymin_help; /**< @brief minimum value for vx help description.  */
-  double vymax_arg;	/**< @brief maximum value for vy (default='20000.0').  */
-  char * vymax_orig;	/**< @brief maximum value for vy original value given at command line.  */
-  const char *vymax_help; /**< @brief maximum value for vy help description.  */
-  double mass_min_arg;	/**< @brief minimum value for the mass (default='1000.0').  */
-  char * mass_min_orig;	/**< @brief minimum value for the mass original value given at command line.  */
-  const char *mass_min_help; /**< @brief minimum value for the mass help description.  */
-  double mass_max_arg;	/**< @brief maximum value for the mass (default='2000.0').  */
-  char * mass_max_orig;	/**< @brief maximum value for the mass original value given at command line.  */
-  const char *mass_max_help; /**< @brief maximum value for the mass help description.  */
-  int star_arg;	/**< @brief star count (default='35000').  */
-  char * star_orig;	/**< @brief star count original value given at command line.  */
-  const char *star_help; /**< @brief star count help description.  */
+  char * input_file_arg;	/**< @brief input file (default='./input.data').  */
+  char * input_file_orig;	/**< @brief input file original value given at command line.  */
+  const char *input_file_help; /**< @brief input file help description.  */
 
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
-  unsigned int xmin_given ;	/**< @brief Whether xmin was given.  */
-  unsigned int xmax_given ;	/**< @brief Whether xmax was given.  */
-  unsigned int ymin_given ;	/**< @brief Whether ymin was given.  */
-  unsigned int ymax_given ;	/**< @brief Whether ymax was given.  */
-  unsigned int vxmin_given ;	/**< @brief Whether vxmin was given.  */
-  unsigned int vxmax_given ;	/**< @brief Whether vxmax was given.  */
-  unsigned int vymin_given ;	/**< @brief Whether vymin was given.  */
-  unsigned int vymax_given ;	/**< @brief Whether vymax was given.  */
-  unsigned int mass_min_given ;	/**< @brief Whether mass-min was given.  */
-  unsigned int mass_max_given ;	/**< @brief Whether mass-max was given.  */
-  unsigned int star_given ;	/**< @brief Whether star was given.  */
+  unsigned int input_file_given ;	/**< @brief Whether input-file was given.  */
 
 } ;
 
