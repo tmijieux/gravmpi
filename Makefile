@@ -4,6 +4,12 @@ LDFLAGS=$(shell pkg-config --libs glib-2.0) -lm
 GENGETOPT=gengetopt
 CC=mpicc
 
+ifdef DEBUG
+
+else
+CFLAGS+=-O3
+endif
+
 SRC=    cmdline.c \
 	main.c \
 	local.c \

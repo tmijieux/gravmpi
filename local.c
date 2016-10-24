@@ -81,7 +81,7 @@ static double
 greatest_root(double a, double b, double c)
 {
     if (DEQUAL(a, 0)) {
-        if (DEQUAL(b, 0)){
+        if (DEQUAL(b, 0)) {
             fprintf(stderr, "branch a\n");
             return 31536.0; // number of seconds in 1/1000e of a year
         } else {
