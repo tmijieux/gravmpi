@@ -55,25 +55,26 @@ void grav_mpi_create_mpi_star_struct(void)
  */
 void grav_mpi_init_comm(int rank, int group_size, grav_site *remote, grav_site *input)
 {
-
+  if (group_size == 1)
+    return;
+  
   MPI_Bsend_init(remote->stars, remote->star_count,
 		 star_type, (rank+1)%group_size, MPI_ANY_TAG,
 		 MPI_COMM_WORLD, &remote->mpi_req_send);
 
   MPI_Recv_init(remote->stars, remote->star_count,
-		   star_type, rank-1 < 0 ? group_size-1 : rank-1, MPI_ANY_TAG,
-		   MPI_COMM_WORLD, &remote->mpi_req_recv);
+		star_type, rank-1 < 0 ? group_size-1 : rank-1, MPI_ANY_TAG,
+		MPI_COMM_WORLD, &remote->mpi_req_recv);
 
 
   MPI_Bsend_init(input->stars, input->star_count,
 		 star_type, (rank+1)%group_size, MPI_ANY_TAG,
 		 MPI_COMM_WORLD, &input->mpi_req_send);
   MPI_Recv_init(input->stars, input->star_count,
-		   star_type, rank-1 < 0 ? group_size-1 : rank-1, MPI_ANY_TAG,
-		   MPI_COMM_WORLD, &input->mpi_req_recv);
-
+		star_type, rank-1 < 0 ? group_size-1 : rank-1, MPI_ANY_TAG,
+		MPI_COMM_WORLD, &input->mpi_req_recv);
 }
-
+  
 /**
  * Démarrer le transfert des données de 'remote' au processus suivant
  * et la reception des données du processus précédant dans le buffer de 'input'
@@ -83,10 +84,10 @@ void grav_mpi_init_star_transfer(grav_site *remote, grav_site *input, int group_
   // MPI_Start
   if (group_size == 1)
     return;
-  else{
+
     MPI_Start(&remote->mpi_req_send);
     MPI_Start(&input->mpi_req_recv);
-  }
+
 }
 
 /**
@@ -98,12 +99,11 @@ void grav_mpi_finalize_star_transfer(
 {
   if (group_size == 1)
     return;
-  else {
+
     MPI_Status status;
     MPI_Wait(&remote->mpi_req_send, &status);
     MPI_Wait(&input->mpi_req_recv, &status);
 
-  }
 }
 
 /**
