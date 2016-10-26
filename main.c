@@ -7,6 +7,7 @@
 #include "input.h"
 #include "grav-mpi.h"
 #include "local.h"
+#include "error.h"
 
 #define SWAP_POINTER(P1_, P2_)                  \
     do {                                        \
@@ -50,7 +51,7 @@ main_loop(grav_site *local, grav_site *remote, grav_site *input,
         // output
         grav_site_print(local);
 
-        fprintf(stderr, "t=%g, step=%g\n", t, step);
+        grav_debug(stderr, "t=%g, step=%g\n", t, step);
     }
 }
 

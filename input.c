@@ -8,14 +8,14 @@
 
 #include "input.h"
 #include "star.h"
+#include "error.h"
 
 #define LINESIZE 4096
 
 static void
 die_file_bad_format(char const *filename, int line)
 {
-    fprintf(stderr, "%s: line %d invalid file format\n", filename, line);
-    exit(EXIT_FAILURE);
+    grav_fatal("%s: line %d invalid file format\n", filename, line);
 }
 
 static int
