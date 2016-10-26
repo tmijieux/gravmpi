@@ -2,6 +2,7 @@
 
 set term png enhanced
 set key right bottom
+set size ratio -1
 
 set xlabel "x"
 set ylabel "y" 
