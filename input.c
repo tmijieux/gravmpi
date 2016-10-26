@@ -101,4 +101,5 @@ void grav_read_file(char const *filename, int rank, int size,
     // let 'remote' buffer be a copy of 'local' buffer for the first stage:
     copy_buffer(&remote_buf[0], local_stars, len);
     init_buffer((rank-1) < 0 ? (size-1) : (rank-1), remote_buf+1, len);
+    remote_buf[1].star_count = len;
 }

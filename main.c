@@ -19,7 +19,8 @@
 
 
 static void
-main_loop(grav_site *local, grav_site *remote, grav_site *input, int group_size)
+main_loop(grav_site *local, grav_site *remote, grav_site *input,
+          int group_size)
 {
     const double tmax = 3.154e7;
     double t = 0.0;
