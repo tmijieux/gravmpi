@@ -39,7 +39,7 @@ main_loop(grav_site *local, grav_site *remote, grav_site *input,
 
         // à partir d'ici la valeur de la force est "complète"
         double step;
-        grav_site_dump(local, true);
+        //grav_site_dump(local, true);
 
         step = grav_site_local_compute_step(local);
 

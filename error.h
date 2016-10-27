@@ -52,7 +52,6 @@ char const *grav_errmsg(int errcode);
         fprintf(stderr, (format_), ##__VA_ARGS__);              \
     } while(0)
 
-
 #ifdef DEBUG
 #define grav_debug(format_, ...)                                        \
     do {                                                                \
