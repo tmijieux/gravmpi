@@ -5,7 +5,7 @@ GENGETOPT=gengetopt
 CC=mpicc
 
 ifdef DEBUG
-
+CFLAGS+=-ggdb -O0 -DDEBUG=1
 else
 CFLAGS+=-O3
 endif

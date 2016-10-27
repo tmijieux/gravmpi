@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     int star_count = conf.star_arg;
     n = star_count + 0.1*(((double)rand() / RAND_MAX) * star_count);
 
-    printf("%d\n", n);
+    printf("%ld\n", n);
     while (n--) {
         printf("%g %g %g %g %g\n",
                drand(conf.mass_min_arg, conf.mass_max_arg),

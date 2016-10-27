@@ -70,8 +70,11 @@ copy_buffer(grav_site *dest, grav_site *src, int len)
     dest->stars = g_memdup(src->stars, buf_size);
 }
 
-void grav_read_file(char const *filename, int rank, int size,
-                    grav_site *local_stars, grav_site remote_buf[2])
+/**
+ * return total star count
+ */
+int grav_read_file(char const *filename, int rank, int size,
+                   grav_site *local_stars, grav_site remote_buf[2])
 {
     FILE *f = g_fopen(filename, "rb");
     if (f == NULL) {
@@ -83,6 +86,8 @@ void grav_read_file(char const *filename, int rank, int size,
     int c = scan_line(f, "%d", &star_count);
     if (c != 1)
         die_file_bad_format(filename, 0);
+    if (star_count < size)
+        grav_fatal("More process than stars!\n");
 
     int len = (star_count / size) + (star_count % size != 0);
     init_buffer(rank, local_stars, len);
@@ -100,6 +105,8 @@ void grav_read_file(char const *filename, int rank, int size,
 
     // let 'remote' buffer be a copy of 'local' buffer for the first stage:
     copy_buffer(&remote_buf[0], local_stars, len);
-    init_buffer((rank-1) < 0 ? (size-1) : (rank-1), remote_buf+1, len);
-    remote_buf[1].star_count = len;
+    int input_buffer_rank = (rank-1) < 0 ? (size-1) : (rank-1);
+    init_buffer(input_buffer_rank, remote_buf+1, len);
+
+    return star_count;
 }

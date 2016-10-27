@@ -6,6 +6,7 @@
 #include "grav-mpi.h"
 #include "star.h"
 #include "error.h"
+#include "input.h"
 
 #define BUFSIZE 2048
 
@@ -34,7 +35,7 @@ handle_mpi_error(int code)
         char error_string[BUFSIZE];
         int len = BUFSIZE;
         MPI_Error_string(code, error_string, &len);
-        grav_debug("%3d: %s\n", grav_get_rank(), error_string);
+        grav_error("%3d: %s\n", grav_get_rank(), error_string);
         exit(EXIT_FAILURE);
     }
 }
@@ -70,40 +71,37 @@ void grav_mpi_create_mpi_star_struct(void)
  * Initialiser les communications persistantes avec le processus suivants
  * et le processus precedant;
  */
-void grav_mpi_init_comm(int rank, int group_size,
-                        grav_site *remote, grav_site *input)
+void grav_mpi_init_comm(
+    int rank, int group_size, int star_count, grav_site *buf1, grav_site *buf2)
 {
-    if (group_size == 1)
+    if (group_size <= 1)
         return;
 
-    MPI_Bsend_init(remote->stars, remote->star_count,
-                   star_type, (rank+1)%group_size, 1,
-                   MPI_COMM_WORLD, &remote->mpi_req_send);
-    grav_debug("remote_send count=%d\n", remote->star_count);
+    const int tag = 1;
+    int next = (rank+1) % group_size;
+    int prev = ((rank-1) < 0) ? (group_size-1) : (rank-1);
+    int len = STAR_BUF_SIZE(group_size, star_count);
 
-    MPI_Recv_init(remote->stars, remote->star_count,
-                  star_type, rank-1 < 0 ? group_size-1 : rank-1, MPI_ANY_TAG,
-                  MPI_COMM_WORLD, &remote->mpi_req_recv);
+    MPI_Bsend_init(buf1->stars, len, star_type, next, tag,
+                   MPI_COMM_WORLD, &buf1->mpi_req_send);
+    MPI_Bsend_init(buf2->stars, len, star_type, next, tag,
+                   MPI_COMM_WORLD, &buf2->mpi_req_send);
 
-
-    MPI_Bsend_init(input->stars, input->star_count,
-                   star_type, (rank+1)%group_size, 1,
-                   MPI_COMM_WORLD, &input->mpi_req_send);
-
-    MPI_Recv_init(input->stars, input->star_count,
-                  star_type, rank-1 < 0 ? group_size-1 : rank-1, MPI_ANY_TAG,
-                  MPI_COMM_WORLD, &input->mpi_req_recv);
-    grav_debug("input count=%d\n", input->star_count);
+    MPI_Recv_init(buf1->stars, len, star_type, prev, MPI_ANY_TAG,
+                  MPI_COMM_WORLD, &buf1->mpi_req_recv);
+    MPI_Recv_init(buf2->stars, len, star_type, prev, MPI_ANY_TAG,
+                  MPI_COMM_WORLD, &buf2->mpi_req_recv);
 }
 
 /**
  * Démarrer le transfert des données de 'remote' au processus suivant
  * et la reception des données du processus précédant dans le buffer de 'input'
  */
-void grav_mpi_init_star_transfer(grav_site *remote, grav_site *input, int group_size)
+void grav_mpi_init_star_transfer(int group_size,
+                                 grav_site *remote, grav_site *input)
 {
     // MPI_Start
-    if (group_size == 1)
+    if (group_size <= 1)
         return;
 
     int err;
@@ -119,7 +117,7 @@ void grav_mpi_init_star_transfer(grav_site *remote, grav_site *input, int group_
  *  'grav_mpi_init_star_transfer'
  */
 void grav_mpi_finalize_star_transfer(
-    grav_site *remote, grav_site *input, int group_size)
+    int group_size, grav_site *remote, grav_site *input)
 {
     if (group_size <= 1)
         return;
@@ -131,8 +129,6 @@ void grav_mpi_finalize_star_transfer(
 
     int count;
     MPI_Get_count(&status, star_type, &count);
-    grav_debug("count=%d\n", count);
-
     err = MPI_Wait(&input->mpi_req_recv, &status);
     handle_mpi_error(err);
 }
@@ -141,11 +137,11 @@ void grav_mpi_finalize_star_transfer(
  * Calculer avec les autres processus la valeur du pas de temps à adopter
  * avec une réduction MPI
  */
-double grav_mpi_reduce_step(int rank, int group_size, double local_step)
+double grav_mpi_reduce_step(double local_step)
 {
-    int err;
     double result;
-    err = MPI_Allreduce(&local_step, &result, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+    int err = MPI_Allreduce(&local_step, &result, 1,
+                            MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
     handle_mpi_error(err);
     return result;
 }

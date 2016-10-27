@@ -81,17 +81,13 @@ void grav_site_local_compute_force(grav_site *local, grav_site *remote)
 static double
 greatest_root(double a, double b, double c)
 {
-    grav_debug("a=%g, b=%g, c=%g\n", a, b, c);
     if (DEQUAL(a, 0)) {
         if (DEQUAL(b, 0)) {
-            grav_debug("branch a\n");
             return 31536.0; // number of seconds in 1/1000e of a year
         } else {
-            grav_debug("branch b\n");
             return -c / b;
         }
     }
-    grav_debug(stderr, "branch c\n");
     assert(c < 0);
     return (-b + sqrt(b*b-4*a*c)) / 2*a;
 }

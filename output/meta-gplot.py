@@ -26,11 +26,16 @@ if __name__ == "__main__":
     print "set xlabel \"x\""
     print "set ylabel \"y\""
     print "set output \"%s\"" % (output_filename)
-    
+
+    print "plot ",
+    l = []
     for i in xrange(0, proc_count):
         s = star_per_file+1 if i < extra_files else star_per_file
-        l = []
         for k in range(0, s):
-            id = i*s+k if i < extra_files else extra_files*(star_per_file+1)+(i-extra_files)*s+k
-            l.append("\t\"output.1.%d\" using %d:%d with lines title \"star %d\"" % (i, 2*k+1, 2*k+2, id))
-        print "plot "+ ", \\\n".join(l)
+            if i < extra_files:
+                star_id = i*s+k
+            else:
+                star_id = extra_files*(star_per_file+1)+(i-extra_files)*s+k
+            l.append("\t\"output.1.%d\" using %d:%d with lines title \"star %d\""
+                     % (i, 2*k+1, 2*k+2, star_id))
+    print ", \\\n".join(l)
