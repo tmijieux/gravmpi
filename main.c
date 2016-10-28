@@ -32,8 +32,10 @@ main_loop(int rank, int group_size, int star_count,
         for (int i = 0; i < group_size; ++i) {
             grav_mpi_init_star_transfer(group_size, remote, input);
 
-            int remote_rank = (rank+i)%group_size;
+            int remote_rank = (rank+group_size-1+i)%group_size;
+            remote->rank = remote_rank;
             remote->star_count = STAR_COUNT(remote_rank, group_size, star_count);
+
             grav_site_local_compute_force(local, remote);
 
             grav_mpi_finalize_star_transfer(group_size, remote, input);
