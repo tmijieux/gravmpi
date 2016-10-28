@@ -22,7 +22,7 @@ static void
 main_loop(int rank, int group_size, int star_count,
           grav_site *local, grav_site *remote, grav_site *input)
 {
-    const double tmax = 3.154e7;
+    const double tmax = 3.154e7; // number of seconds in 1 year
     grav_site_print(local);
 
     double t = 0.0;
@@ -32,12 +32,11 @@ main_loop(int rank, int group_size, int star_count,
         for (int i = 0; i < group_size; ++i) {
             grav_mpi_init_star_transfer(group_size, remote, input);
 
-            int remote_rank = (rank+group_size-1+i)%group_size;
+            int remote_rank = (rank+group_size-i)%group_size;
             remote->rank = remote_rank;
             remote->star_count = STAR_COUNT(remote_rank, group_size, star_count);
 
             grav_site_local_compute_force(local, remote);
-
             grav_mpi_finalize_star_transfer(group_size, remote, input);
             SWAP_POINTER(remote, input);
         }
@@ -47,7 +46,7 @@ main_loop(int rank, int group_size, int star_count,
         step = grav_mpi_reduce_step(step);
         grav_site_local_compute_position(local, step);
         grav_site_print(local);
-         t += step;
+        t += step;
     }
 }
 

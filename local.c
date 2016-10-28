@@ -53,7 +53,7 @@ compute_remote_force(grav_site *local, grav_site *remote)
 
     for (int i = 0; i < local->star_count; ++i) {
         grav_star *s = local->stars+i;
-        for (int j = 0; j < i; ++j) {
+        for (int j = 0; j < remote->star_count; ++j) {
             grav_star *r = remote->stars+j;
             double f_n, v_x, v_y, v_n;
 
@@ -104,7 +104,6 @@ double grav_site_local_compute_step(grav_site *local)
                                 hypot(s->vx, s->vy),
                                 - s->min_displacement);
         step = min(step, newstep);
-        (void) s;
     }
     return step;
 }
@@ -113,9 +112,9 @@ void grav_site_local_compute_position(grav_site *local, double step)
 {
     for (int i = 0; i < local->star_count; ++i) {
         grav_star *s = local->stars+i;
-        s->vx += s->ax * step;
+        s->vx += s->ax * step; // compute speed
         s->vy += s->ay * step;
-        s->x += s->vx * step;
+        s->x += s->vx * step;  // compute position
         s->y += s->vy * step;
     }
 }

@@ -12,8 +12,8 @@
      + ((EXTRA_STAR(TOTAL_STAR_COUNT_, GROUP_SIZE_) != 0)               \
         * ((RANK_) < EXTRA_STAR(TOTAL_STAR_COUNT_, GROUP_SIZE_))))
 
-#define STAR_BUF_SIZE(GROUP_SIZE_, TOTAL_STAR_COUNT_)                   \
-    ((TOTAL_STAR_COUNT_) / (GROUP_SIZE_)                                \
+#define STAR_BUF_SIZE(GROUP_SIZE_, TOTAL_STAR_COUNT_)           \
+    ((TOTAL_STAR_COUNT_) / (GROUP_SIZE_)                        \
      + (EXTRA_STAR(TOTAL_STAR_COUNT_, GROUP_SIZE_) != 0))
 
 
