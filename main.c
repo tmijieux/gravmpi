@@ -42,6 +42,7 @@ main_loop(int rank, int group_size, int star_count,
         }
 
         //grav_site_dump(local, true);
+
         double step = grav_site_local_compute_step(local, minstep);
         step = grav_mpi_reduce_step(step);
         grav_site_local_compute_position(local, step);
