@@ -25,5 +25,5 @@ perf_mflops(const perf_t * p, const uint64_t nb_op);
 uint64_t
 perf_get_micro(const perf_t *p);
 
-    
+
 #endif

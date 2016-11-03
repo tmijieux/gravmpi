@@ -88,7 +88,7 @@ double grav_site_local_compute_step(grav_site *local, double min_step)
         step = min(step, newstep);
     }
 
-    step =  max(step, min_step);
+    step = max(step, min_step);
     grav_debug("step=%g\n", step);
     #endif
     return step;

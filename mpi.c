@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
-/* #include <glib.h> */
+/* #include <glib.h>  */
 
 #include "grav-mpi.h"
 #include "star.h"
@@ -34,7 +34,8 @@ handle_mpi_error(int code)
     if (code != MPI_SUCCESS) {
         char error_string[BUFSIZE];
         int len = BUFSIZE;
-        MPI_Error_string(code, error_string, &len);
+        grav_error("code=%d\n", code);
+        MPI_Error_string(-code, error_string, &len);
         grav_error("%3d: %s\n", grav_get_rank(), error_string);
         exit(EXIT_FAILURE);
     }
@@ -45,15 +46,15 @@ void grav_mpi_create_mpi_star_struct(void)
     const int count = 5;
     int blen[6] = { 1, 1, 1, 1, 1 };
     MPI_Aint offsets[6] = {
-        #ifdef HAVE_GLIB_H
-        G_STRUCT_OFFSET(grav_star, mass),
-        G_STRUCT_OFFSET(grav_star, x), G_STRUCT_OFFSET(grav_star, y),
-        G_STRUCT_OFFSET(grav_star, vx),G_STRUCT_OFFSET(grav_star, vy),
-        #else
+        /* #ifdef HAVE_GLIB_H */
+        /* G_STRUCT_OFFSET(grav_star, mass), */
+        /* G_STRUCT_OFFSET(grav_star, x), G_STRUCT_OFFSET(grav_star, y), */
+        /* G_STRUCT_OFFSET(grav_star, vx),G_STRUCT_OFFSET(grav_star, vy), */
+        /* #else */
         GET_ADDRESS(grav_star, mass),
         GET_ADDRESS(grav_star, x), GET_ADDRESS(grav_star, y),
         GET_ADDRESS(grav_star, vx),GET_ADDRESS(grav_star, vy),
-        #endif
+        /* #endif */
 
     };
     MPI_Datatype types[5] = {
@@ -64,7 +65,7 @@ void grav_mpi_create_mpi_star_struct(void)
     MPI_Datatype tmp;
     err = MPI_Type_create_struct(count, blen, offsets, types, &tmp);
     handle_mpi_error(err);
-
+    
     err = MPI_Type_create_resized(tmp, 0, sizeof(grav_star), &star_type);
     handle_mpi_error(err);
 
@@ -84,10 +85,11 @@ void grav_mpi_init_comm(
     if (group_size <= 1)
         return;
 
-    const int tag = 1;
+    const int tag = 0;
     int next = (rank+1) % group_size;
     int prev = ((rank-1) < 0) ? (group_size-1) : (rank-1);
     int len = STAR_BUF_SIZE(group_size, star_count);
+    fprintf(stderr, "star_buf_size = %d\n", len);
 
     MPI_Bsend_init(buf1->stars, len, star_type, next, tag,
                    MPI_COMM_WORLD, &buf1->mpi_req_send);

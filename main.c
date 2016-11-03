@@ -36,6 +36,8 @@ main_loop(int rank, int group_size, int star_count,
             int remote_rank = (rank+group_size-i)%group_size;
             remote->rank = remote_rank;
             remote->star_count = STAR_COUNT(remote_rank, group_size, star_count);
+            /* fprintf(stderr, "remote_rank: %d, star_count=%d\n", */
+            /*         remote_rank, remote->star_count); */
 
             grav_site_local_compute_force(local, remote);
             grav_mpi_finalize_star_transfer(group_size, remote, input);
@@ -47,8 +49,10 @@ main_loop(int rank, int group_size, int star_count,
         double step = grav_site_local_compute_step(local, minstep);
         step = grav_mpi_reduce_step(step);
         grav_site_local_compute_position(local, step);
-        grav_site_print(local);
+
         t += step;
+        grav_site_print(local);
+        grav_site_copy(remote, local);
     }
 }
 
@@ -57,6 +61,10 @@ int main(int argc, char *argv[])
     int group_size, rank, star_count;
     grav_site remote_buf[2];
     grav_site local_stars;
+
+    memset(&local_stars, 0, sizeof local_stars);
+    memset(remote_buf, 0, sizeof remote_buf);
+    
     struct gengetopt_args_info opt;
 
     cmdline_parser(argc, argv, &opt);
