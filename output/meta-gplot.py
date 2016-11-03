@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     print "#!/usr/bin/gnuplot"
     print "set term png enhanced"
-    print "set key right bottom"
+    print "set nokey"# right bottom"
     print "set size ratio -1"
     print "set xlabel \"x\""
     print "set ylabel \"y\""
@@ -44,6 +44,6 @@ if __name__ == "__main__":
                 star_id = i*s+k
             else:
                 star_id = extra_files*(star_per_file+1)+(i-extra_files)*s+k
-            l.append("\t\"output.1.%0*d\" using %d:%d with lines title \"star %d\""
-                    % (digit_count, i, 2*k+1, 2*k+2, star_id))
+            l.append("\t\"output.1.%0*d\" using %d:%d with lines "#title \"star %d\""
+                    % (digit_count, i, 2*k+1, 2*k+2))#, star_id))
     print ", \\\n".join(l)
