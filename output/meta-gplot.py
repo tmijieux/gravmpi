@@ -1,6 +1,8 @@
 #!/usr/bin/env python2
 
 import sys
+import math
+
 
 if __name__ == "__main__":
 
@@ -10,6 +12,12 @@ if __name__ == "__main__":
         
     proc_count = int(sys.argv[1])
     star_count = int(sys.argv[2])
+
+    if (proc_count > 2):
+        digit_count = int(math.floor(math.log(proc_count-1, 10)) + 1) 
+    else:
+        digit_count = 0
+    
     if proc_count > star_count:
         print "less stars than processor is not valid."
         sys.exit(1)
@@ -36,6 +44,6 @@ if __name__ == "__main__":
                 star_id = i*s+k
             else:
                 star_id = extra_files*(star_per_file+1)+(i-extra_files)*s+k
-            l.append("\t\"output.1.%d\" using %d:%d with lines title \"star %d\""
-                     % (i, 2*k+1, 2*k+2, star_id))
+            l.append("\t\"output.1.%0*d\" using %d:%d with lines title \"star %d\""
+                    % (digit_count, i, 2*k+1, 2*k+2, star_id))
     print ", \\\n".join(l)

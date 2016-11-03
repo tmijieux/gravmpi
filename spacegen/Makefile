@@ -14,9 +14,8 @@ all: $(TARGET)
 
 -include $(DEP)
 
-
-cmdline.h cmdline.c: spacegen.ggo
-	$(GENGETOPT) < $^
+#cmdline.h cmdline.c: spacegen.ggo
+#	$(GENGETOPT) < $^
 
 spacegen: $(OBJ)
 	$(CC) $^ -o $@ $(LDFLAGS)

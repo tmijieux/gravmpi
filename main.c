@@ -8,6 +8,7 @@
 #include "grav-mpi.h"
 #include "local.h"
 #include "error.h"
+#include "perf/perf.h"
 
 #define SWAP_POINTER(P1_, P2_)                  \
     do {                                        \
@@ -77,8 +78,21 @@ int main(int argc, char *argv[])
            rank, group_size, opt.time_arg, opt.step_arg);
 
     grav_mpi_init_comm(rank, group_size, star_count, remote_buf, remote_buf+1);
+
+    perf_t p1, p2;
+    perf(&p1);
     main_loop(rank, group_size, star_count, opt.time_arg, opt.step_arg,
               &local_stars, remote_buf, remote_buf+1);
+    perf(&p2);
+    perf_diff(&p1, &p2);
+
+
+    uint64_t micro, max_t;
+    micro = perf_get_micro(&p2);
+    MPI_Reduce(&micro, &max_t, 1, MPI_UNSIGNED_LONG,
+               MPI_MAX, 0, MPI_COMM_WORLD);
+    if (!rank)
+        fprintf(stderr, "time %lu,%06lu s\n", max_t/1000000UL, max_t%1000000UL);
 
     MPI_Finalize();
     return EXIT_SUCCESS;

@@ -16,7 +16,8 @@ SRC=    cmdline.c \
 	mpi.c \
 	input.c \
 	star.c \
-	error.c
+	error.c \
+	perf/perf.c
 
 OBJ=$(SRC:.c=.o)
 DEP=$(SRC:.c=.d)
