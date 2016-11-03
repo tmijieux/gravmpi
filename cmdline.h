@@ -39,14 +39,20 @@ struct gengetopt_args_info
 {
   const char *help_help; /**< @brief Print help and exit help description.  */
   const char *version_help; /**< @brief Print version and exit help description.  */
-  char * input_file_arg;	/**< @brief input file (default='./input.data').  */
-  char * input_file_orig;	/**< @brief input file original value given at command line.  */
-  const char *input_file_help; /**< @brief input file help description.  */
+  double time_arg;	/**< @brief maximum time limit (default='3.154e7').  */
+  char * time_orig;	/**< @brief maximum time limit original value given at command line.  */
+  const char *time_help; /**< @brief maximum time limit help description.  */
+  double step_arg;	/**< @brief minimum step value (default='1e-10').  */
+  char * step_orig;	/**< @brief minimum step value original value given at command line.  */
+  const char *step_help; /**< @brief minimum step value help description.  */
 
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
-  unsigned int input_file_given ;	/**< @brief Whether input-file was given.  */
+  unsigned int time_given ;	/**< @brief Whether time was given.  */
+  unsigned int step_given ;	/**< @brief Whether step was given.  */
 
+  char **inputs ; /**< @brief unamed options (options without names) */
+  unsigned inputs_num ; /**< @brief unamed options number */
 } ;
 
 /** @brief The additional parameters to pass to parser functions */

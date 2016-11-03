@@ -39,3 +39,6 @@ clean:
 mrproper: clean
 	$(RM) $(TARGET)
 
+genopt: star.ggo
+	$(GENGETOPT) -u"INPUT FILES" < star.ggo
+

@@ -3,5 +3,8 @@ package "star"
 
 purpose "compute particle movements due to gravitational interaction"
 
-option "input-file" i "input file"
-       string optional default="./input.data"
+option "time" t "maximum time limit"
+       double optional default="3.154e7"
+
+option "step" s "minimum step value"
+       double optional default="1e-10"

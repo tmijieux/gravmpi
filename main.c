@@ -20,9 +20,9 @@
 
 static void
 main_loop(int rank, int group_size, int star_count,
+          const double tmax, const double minstep,
           grav_site *local, grav_site *remote, grav_site *input)
 {
-    const double tmax = 3.154e7; // number of seconds in 1 year
     grav_site_print(local);
 
     double t = 0.0;
@@ -42,7 +42,7 @@ main_loop(int rank, int group_size, int star_count,
         }
 
         //grav_site_dump(local, true);
-        double step = grav_site_local_compute_step(local);
+        double step = grav_site_local_compute_step(local, minstep);
         step = grav_mpi_reduce_step(step);
         grav_site_local_compute_position(local, step);
         grav_site_print(local);
@@ -60,14 +60,21 @@ int main(int argc, char *argv[])
     MPI_Init(NULL, NULL);
     MPI_Comm_size(MPI_COMM_WORLD, &group_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    printf("#rank: %d; group_size: %d\n", rank, group_size);
 
     cmdline_parser(argc, argv, &opt);
     grav_mpi_create_mpi_star_struct();
-    star_count = grav_read_file(opt.input_file_arg, rank, group_size,
+    if (!opt.inputs_num) {
+        cmdline_parser_print_help();
+        grav_error("No input file!\n");
+        exit(EXIT_FAILURE);
+    }
+    printf("#rank: %d; group_size: %d; max_time=%g; min_step=%g\n",
+           rank, group_size, opt.time_arg, opt.step_arg);
+
+    star_count = grav_read_file(opt.inputs[0], rank, group_size,
                                 &local_stars, remote_buf);
     grav_mpi_init_comm(rank, group_size, star_count, remote_buf, remote_buf+1);
-    main_loop(rank, group_size, star_count,
+    main_loop(rank, group_size, star_count, opt.time_arg, opt.step_arg,
               &local_stars, remote_buf, remote_buf+1);
 
     MPI_Finalize();

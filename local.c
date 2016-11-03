@@ -92,7 +92,7 @@ greatest_root(double a, double b, double c)
     return (-b + sqrt(b*b-4*a*c)) / (2*a);
 }
 
-double grav_site_local_compute_step(grav_site *local)
+double grav_site_local_compute_step(grav_site *local, double min_step)
 {
     double step = DBL_MAX;
     for (int i = 0; i < local->star_count; ++i) {
@@ -105,7 +105,7 @@ double grav_site_local_compute_step(grav_site *local)
                                 - s->min_displacement);
         step = min(step, newstep);
     }
-    return step;
+    return max(step, min_step);
 }
 
 void grav_site_local_compute_position(grav_site *local, double step)
