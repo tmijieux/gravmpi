@@ -17,30 +17,30 @@ compute_local_force(grav_site *local)
 
         for (int j = 0; j < i; ++j) {
             grav_star *r = local->stars+j;
-            double f_n, v_x, v_y, u_n;
+            double f_n, u_x, u_y, u_n;
 
             u_n = hypot(s->x - r->x, s->y - r->y);
             f_n = ((GRAVITATIONAL_CONSTANT * s->mass * r->mass)
                    / SQUARE(u_n));
-            v_x = (r->x - s->x) / u_n;
-            v_y = (r->y - s->y) / u_n;
+            u_x = (r->x - s->x) / u_n;
+            u_y = (r->y - s->y) / u_n;
 
-            s->fx += f_n * v_x;
-            s->fy += f_n * v_y;
+            s->fx += f_n * u_x;
+            s->fy += f_n * u_y;
             s->min_displacement = min(s->min_displacement, 0.1 * u_n);
         }
         for (int j = i+1; j < local->star_count; ++j) {
             grav_star *r = local->stars+j;
-            double f_n, v_x, v_y, u_n;
+            double f_n, u_x, u_y, u_n;
 
             u_n = hypot(s->x - r->x, s->y - r->y);
             f_n = ((GRAVITATIONAL_CONSTANT * s->mass * r->mass)
                    / SQUARE(u_n));
-            v_x = (r->x - s->x) / u_n;
-            v_y = (r->y - s->y) / u_n;
+            u_x = (r->x - s->x) / u_n;
+            u_y = (r->y - s->y) / u_n;
 
-            s->fx += f_n * v_x;
-            s->fy += f_n * v_y;
+            s->fx += f_n * u_x;
+            s->fy += f_n * u_y;
             s->min_displacement = min(s->min_displacement, 0.1 * u_n);
         }
     }

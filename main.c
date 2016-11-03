@@ -57,22 +57,24 @@ int main(int argc, char *argv[])
     grav_site local_stars;
     struct gengetopt_args_info opt;
 
-    MPI_Init(NULL, NULL);
-    MPI_Comm_size(MPI_COMM_WORLD, &group_size);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
     cmdline_parser(argc, argv, &opt);
-    grav_mpi_create_mpi_star_struct();
     if (!opt.inputs_num) {
         cmdline_parser_print_help();
         grav_error("No input file!\n");
         exit(EXIT_FAILURE);
     }
-    printf("#rank: %d; group_size: %d; max_time=%g; min_step=%g\n",
-           rank, group_size, opt.time_arg, opt.step_arg);
+    MPI_Init(NULL, NULL);
+    MPI_Comm_size(MPI_COMM_WORLD, &group_size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     star_count = grav_read_file(opt.inputs[0], rank, group_size,
                                 &local_stars, remote_buf);
+
+    grav_mpi_create_mpi_star_struct();
+
+    printf("#rank: %d; group_size: %d; max_time=%g; min_step=%g\n",
+           rank, group_size, opt.time_arg, opt.step_arg);
+
     grav_mpi_init_comm(rank, group_size, star_count, remote_buf, remote_buf+1);
     main_loop(rank, group_size, star_count, opt.time_arg, opt.step_arg,
               &local_stars, remote_buf, remote_buf+1);
