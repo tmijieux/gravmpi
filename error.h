@@ -1,14 +1,12 @@
 #ifndef GRAV_ERROR_H
 #define GRAV_ERROR_H
 
-#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <errno.h>
 
-G_BEGIN_DECLS
 
 #define GRAV_ERROR_LIST(ERROR)                  \
     ERROR(SUCCESS)                              \
@@ -62,7 +60,5 @@ char const *grav_errmsg(int errcode);
 #else // DEBUG
 #define grav_debug(format_, ...) ((void) (format_))
 #endif // DEBUG
-
-G_END_DECLS
 
 #endif // GRAV_ERROR_H

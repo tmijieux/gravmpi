@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
-#include <glib.h>
+/* #include <glib.h> */
 
 #include "grav-mpi.h"
 #include "star.h"
@@ -12,13 +12,13 @@
 
 MPI_Datatype star_type;
 
-#define GET_ADRESS(struct_, field_)             \
+#define GET_ADDRESS(struct_, field_)            \
     ({                                          \
         MPI_Aint addr1_, addr2_;                \
-        struct_ a_ ;                            \
-        MPI_Get_address(&a_, &addr1);           \
-        MPI_Get_address(&a->field_, &addr2);    \
-        addr2 - addr1;                          \
+        struct_ a_;                             \
+        MPI_Get_address(&a_, &addr1_);          \
+        MPI_Get_address(&(a_.field_), &addr2_); \
+        addr2_ - addr1_;                        \
     })
 
 int grav_get_rank(void)
@@ -45,9 +45,16 @@ void grav_mpi_create_mpi_star_struct(void)
     const int count = 5;
     int blen[6] = { 1, 1, 1, 1, 1 };
     MPI_Aint offsets[6] = {
+        #ifdef HAVE_GLIB_H
         G_STRUCT_OFFSET(grav_star, mass),
         G_STRUCT_OFFSET(grav_star, x), G_STRUCT_OFFSET(grav_star, y),
         G_STRUCT_OFFSET(grav_star, vx),G_STRUCT_OFFSET(grav_star, vy),
+        #else
+        GET_ADDRESS(grav_star, mass),
+        GET_ADDRESS(grav_star, x), GET_ADDRESS(grav_star, y),
+        GET_ADDRESS(grav_star, vx),GET_ADDRESS(grav_star, vy),
+        #endif
+
     };
     MPI_Datatype types[5] = {
         MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE

@@ -72,6 +72,10 @@ greatest_root(double a, double b, double c)
 
 double grav_site_local_compute_step(grav_site *local, double min_step)
 {
+    #ifdef GRAV_NO_RECOMPUTE_STEP
+    double step = min_step;
+    (void) local;
+    #else
     double step = DBL_MAX;
     for (int i = 0; i < local->star_count; ++i) {
         double newstep;
@@ -86,6 +90,7 @@ double grav_site_local_compute_step(grav_site *local, double min_step)
 
     step =  max(step, min_step);
     grav_debug("step=%g\n", step);
+    #endif
     return step;
 }
 

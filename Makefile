@@ -1,6 +1,6 @@
 TARGET=star
-CFLAGS=-std=gnu99 -g -Wall -Wextra $(shell pkg-config --cflags glib-2.0)
-LDFLAGS=$(shell pkg-config --libs glib-2.0) -lm
+CFLAGS=-std=gnu99 -g -Wall -Wextra #$(shell pkg-config --cflags glib-2.0)
+LDFLAGS=-lm #$(shell pkg-config --libs glib-2.0) 
 GENGETOPT=gengetopt
 CC=mpicc
 
@@ -8,6 +8,10 @@ ifdef DEBUG
 CFLAGS+=-ggdb -O0 -DDEBUG=1
 else
 CFLAGS+=-O3
+endif
+
+ifdef NOSTEP
+CFLAGS+=-DGRAV_NO_RECOMPUTE_STEP
 endif
 
 SRC=    cmdline.c \

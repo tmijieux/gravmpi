@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <glib.h>
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
-#include <glib/gstdio.h>
+/* #include <glib.h> */
+/* #include <glib/gstdio.h> */
 
 #include "input.h"
 #include "star.h"
@@ -59,7 +59,15 @@ init_buffer(int rank, grav_site *buf, int len)
 
     buf->rank = rank;
     buf->star_count = 0;
-    buf->stars = g_malloc0(buf_size);
+    buf->stars = calloc(1, buf_size);
+}
+
+static void *
+memdup(void *buf, size_t buf_size)
+{
+    void *new_buf = malloc(buf_size);
+    memcpy(new_buf, buf, buf_size);
+    return new_buf;
 }
 
 static void
@@ -67,7 +75,7 @@ copy_buffer(grav_site *dest, grav_site *src, int len)
 {
     size_t buf_size = len * sizeof(grav_star);
     memcpy(dest, src, sizeof*dest);
-    dest->stars = g_memdup(src->stars, buf_size);
+    dest->stars = memdup(src->stars, buf_size);
 }
 
 /**
@@ -76,7 +84,7 @@ copy_buffer(grav_site *dest, grav_site *src, int len)
 int grav_read_file(char const *filename, int rank, int size,
                    grav_site *local_stars, grav_site remote_buf[2])
 {
-    FILE *f = g_fopen(filename, "rb");
+    FILE *f = fopen(filename, "rb");
     if (f == NULL) {
         fprintf(stderr, "Cannot open `%s´: %s\n", filename, strerror(errno));
         exit(EXIT_FAILURE);
