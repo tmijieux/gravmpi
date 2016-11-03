@@ -17,31 +17,31 @@ compute_local_force(grav_site *local)
 
         for (int j = 0; j < i; ++j) {
             grav_star *r = local->stars+j;
-            double f_n, v_x, v_y, v_n;
+            double f_n, v_x, v_y, u_n;
 
-            v_n = hypot(s->x - r->x, s->y - r->y);
+            u_n = hypot(s->x - r->x, s->y - r->y);
             f_n = ((GRAVITATIONAL_CONSTANT * s->mass * r->mass)
-                   / SQUARE(v_n));
-            v_x = (r->x - s->x) / v_n;
-            v_y = (r->y - s->y) / v_n;
+                   / SQUARE(u_n));
+            v_x = (r->x - s->x) / u_n;
+            v_y = (r->y - s->y) / u_n;
 
             s->fx += f_n * v_x;
             s->fy += f_n * v_y;
-            s->min_displacement = min(s->min_displacement, 0.1 * v_n);
+            s->min_displacement = min(s->min_displacement, 0.1 * u_n);
         }
         for (int j = i+1; j < local->star_count; ++j) {
             grav_star *r = local->stars+j;
-            double f_n, v_x, v_y, v_n;
+            double f_n, v_x, v_y, u_n;
 
-            v_n = hypot(s->x - r->x, s->y - r->y);
+            u_n = hypot(s->x - r->x, s->y - r->y);
             f_n = ((GRAVITATIONAL_CONSTANT * s->mass * r->mass)
-                   / SQUARE(v_n));
-            v_x = (r->x - s->x) / v_n;
-            v_y = (r->y - s->y) / v_n;
+                   / SQUARE(u_n));
+            v_x = (r->x - s->x) / u_n;
+            v_y = (r->y - s->y) / u_n;
 
             s->fx += f_n * v_x;
             s->fy += f_n * v_y;
-            s->min_displacement = min(s->min_displacement, 0.1 * v_n);
+            s->min_displacement = min(s->min_displacement, 0.1 * u_n);
         }
     }
 }
@@ -55,17 +55,17 @@ compute_remote_force(grav_site *local, grav_site *remote)
         grav_star *s = local->stars+i;
         for (int j = 0; j < remote->star_count; ++j) {
             grav_star *r = remote->stars+j;
-            double f_n, v_x, v_y, v_n;
+            double f_n, u_x, u_y, u_n;
 
-            v_n = hypot(s->x - r->x, s->y - r->y);
+            u_n = hypot(s->x - r->x, s->y - r->y);
             f_n = ((GRAVITATIONAL_CONSTANT * s->mass * r->mass)
-                   / SQUARE(v_n));
-            v_x = (r->x - s->x) / v_n;
-            v_y = (r->y - s->y) / v_n;
+                   / SQUARE(u_n));
+            u_x = (r->x - s->x) / u_n;
+            u_y = (r->y - s->y) / u_n;
 
-            s->fx += f_n * v_x;
-            s->fy += f_n * v_y;
-            s->min_displacement = min(s->min_displacement, 0.1 * v_n);
+            s->fx += f_n * u_x;
+            s->fy += f_n * u_y;
+            s->min_displacement = min(s->min_displacement, 0.1 * u_n);
         }
     }
 }
@@ -89,7 +89,7 @@ greatest_root(double a, double b, double c)
         }
     }
     assert(c < 0);
-    return (-b + sqrt(b*b-4*a*c)) / 2*a;
+    return (-b + sqrt(b*b-4*a*c)) / (2*a);
 }
 
 double grav_site_local_compute_step(grav_site *local)
